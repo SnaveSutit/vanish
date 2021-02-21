@@ -1,0 +1,29 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "eu.vanish.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "EntityAnimationS2CPacketMixin",
+    "EntityAttributesS2CPacketMixin",
+    "EntityEquipmentUpdateS2CPacketMixin",
+    "EntityPositionS2CPacketMixin",
+    "EntityS2CPacketMixin",
+    "EntitySetHeadYawS2CPacketMixin",
+    "EntityStatusS2CPacketMixin",
+    "EntityTrackerUpdateS2CPacketMixin",
+    "EntityVelocityUpdateS2CPacketMixin",
+    "GameMessageS2CPacketMixin",
+    "ItemPickupAnimationS2CPacketMixin",
+    "PlayerListS2CPacketMixin",
+    "PlayerManagerMixin",
+    "ServerMetadataMixin",
+    "ServerPlayNetworkHandlerMixin",
+    "ServerWorldMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

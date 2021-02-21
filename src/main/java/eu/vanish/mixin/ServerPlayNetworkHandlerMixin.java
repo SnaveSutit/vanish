@@ -2,7 +2,6 @@ package eu.vanish.mixin;
 
 import eu.vanish.Vanish;
 import eu.vanish.data.Settings;
-import eu.vanish.exeptions.NoTranslateableMessageExeption;
 import eu.vanish.mixinterface.*;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -78,8 +77,8 @@ public abstract class ServerPlayNetworkHandlerMixin {
             if (!settings.removeChatMessage() && message.getKey().contains("chat.type.text")) return false;
             if (!settings.removeWisperMessage() && message.getKey().contains("commands.message.display.incoming")) return false;
             if (!settings.removeCommandOPMessage() && message.getKey().contains("chat.type.admin")) return false;
-            if (settings.showFakeJoinMessage() && !packet.isNonChat() && message.getKey().contains("multiplayer.player.joined")) return false;
-            if (settings.showFakeLeaveMessage() && !packet.isNonChat() && message.getKey().contains("multiplayer.player.left")) return false;
+            if (settings.showFakeJoinMessage() && message.getKey().contains("multiplayer.player.joined")) return false;
+            if (settings.showFakeLeaveMessage() && message.getKey().contains("multiplayer.player.left")) return false;
 
             return Arrays.stream(message.getArgs()).anyMatch(arg -> {
                 if (arg instanceof LiteralText) {
@@ -88,7 +87,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
                 }
                 return false;
             });
-        } catch (NoTranslateableMessageExeption ignore) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -108,12 +107,12 @@ public abstract class ServerPlayNetworkHandlerMixin {
         );
     }
 
-    private TranslatableText getTranslateableTextFromPacket(GameMessageS2CPacket packet) throws NoTranslateableMessageExeption {
+    private TranslatableText getTranslateableTextFromPacket(GameMessageS2CPacket packet){
         Text textMessage = ((IGameMessageS2CPacket) packet).getMessageOnServer();
         if (textMessage instanceof TranslatableText) {
             return (TranslatableText) textMessage;
         }
-        throw new NoTranslateableMessageExeption();
+				return new TranslatableText("Untranslatable Text");
     }
 
     @Inject(at = @At("HEAD"), method = "onDisconnected")

@@ -3,7 +3,6 @@ package eu.vanish.commands;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.datafixers.util.Pair;
 import eu.vanish.Vanish;
 import eu.vanish.data.Settings;
@@ -14,7 +13,6 @@ import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
@@ -36,10 +34,9 @@ public final class VanishCommand {
     private static ServerPlayerEntity vanishStatusEntity = null;
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> commandNode = dispatcher.register(literal("vanish")
+        dispatcher.register(literal("vanish")
                 .requires(source -> source.hasPermissionLevel(4))
                 .executes(context -> vanish(context.getSource().getPlayer())));
-//        dispatcher.register(literal("v").redirect(commandNode));
     }
 
     private static int vanish(ServerPlayerEntity vanishingPlayer) {
@@ -50,10 +47,9 @@ public final class VanishCommand {
         }
         if (settings.showStatusInPlayerlist() && vanishStatusEntity == null && world != null) {
             vanishStatusEntity = new ServerPlayerEntity(
-                    vanish.getServer()
-                    , world
-                    , new GameProfile(UUID.randomUUID(), " You're Vanished")
-                    , new ServerPlayerInteractionManager(world)
+                    vanish.getServer(),
+										world,
+										new GameProfile(UUID.randomUUID(), " You're Vanished")
             );
         }
 
@@ -98,7 +94,7 @@ public final class VanishCommand {
                     if (settings.showFakeLeaveMessage()) {
                         playerEntity.networkHandler.sendPacket(new GameMessageS2CPacket(new TranslatableText("multiplayer.player.left", new LiteralText(vanishingPlayer.getEntityName())).formatted(Formatting.YELLOW), MessageType.CHAT, NIL_UUID));
                     }
-                    playerEntity.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(vanishingPlayer.getEntityId()));
+                    playerEntity.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(vanishingPlayer.getId()));
                 }
             });
 
@@ -127,7 +123,7 @@ public final class VanishCommand {
         }
 
         if (!equipmentList.isEmpty()) {
-            receiver.networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(vanishingPlayer.getEntityId(), equipmentList));
+            receiver.networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(vanishingPlayer.getId(), equipmentList));
         }
     }
 }
